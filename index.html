@@ -26,7 +26,7 @@
 	var wallWidth = 1; //Width of the walls in chars
 	var playerChar = "☗"; //Player object character 
 	var emptyChar = "&nbsp;"; //Empty character (you don't really need to change this)
-	var obstacleChar = "◊"; //Obstacle character such as ◊☠☭♚♥☣☢✦∑∭∬†
+	var obstacleChar = "*"; //Obstacle character such as ◊☠☭♚♥☣☢✦∑∭∬†
 	var obstacleLevel = 0.1; //Goes from 0 to 1. Percentage of line that can be covered by obstacles
 	var obstacleGap = 2; //Empty lines between lines which contains obstacles.
 	//=======================================================
@@ -142,7 +142,7 @@
 	}
 
 	function updatePlayerPosition() {
-		lastLine = $('#stage > p').last();
+		lastLine = $('#stage').children('p').last();
 		lastLine.html(generatePlayerLine(lastLine.html()));
 	}
 	function drawLine(line) {
