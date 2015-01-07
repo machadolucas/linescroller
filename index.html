@@ -1,0 +1,274 @@
+<!--
+	Developed on 07-Jan-2015 by
+	© 2015 Lucas Machado
+	http://machadolucas.me
+-->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Flyer</title>
+	<meta charset="UTF-8"> 
+
+	<link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
+
+	<style type="text/css">
+		html, body {
+			padding: 0em;
+			margin: 0em;
+
+			font-family: "VT323", monospace;
+			background: #222;
+			color: #eaeaea;
+			text-align: center;
+		}
+		a {
+			color: #eaeaea;
+		}
+		#content {
+			margin: 1em auto;
+			background: #111;
+			padding: 1em 3em;
+			font-size: 1.2em;
+		}
+		#stage {
+			font-family: monospace;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			background: #000;
+			color: lime;
+			padding: 0em 1.5em;
+			border-radius: 1em;
+			border: 0.3em solid #dadada;
+			cursor: default;
+
+			margin: 1em;
+			
+		}
+		#stage p {
+			margin: 0em;
+			padding: 0em;
+		}
+	</style>
+
+	<script src="jquery2.1.3.js"></script>
+	<script src="keypress-2.1.0.min.js"></script>
+
+	<script type="text/javascript">
+
+	//========== Game Parameters ============================
+	var stageWidth = 50; //Width of the game area
+	var stageHeight = 25; //Height of the game area
+	var speed = 100; // Speed of scrolling interval. If lower, exponentially faster.
+
+	var wallChar = "▮"; //Character used for the walls in the sides
+	var wallWidth = 1; //Width of the walls in chars
+	var playerChar = "☗"; //Player object character 
+	var emptyChar = "&nbsp;"; //Empty character (you don't really need to change this)
+	var obstacleChar = "◊"; //Obstacle character ◊☠☭♚♥☣☢✦∑∭∬†
+	var obstacleLevel = 0.1; //Goes from 0 to 1. Percentage of line that can be covered by obstacles
+	var obstacleGap = 2; //Empty lines between lines which contains obstacles.
+	//=======================================================
+
+	</script>
+</head>
+<body>
+	
+
+	<div id="content">
+		<h2>Score&nbsp;<span id="score">0</span></h2>
+		<div id="stage"></div>
+		<p>
+			Press P to play/pause. R to restart. Use the arrows to move (left/right).
+		</p>
+	</div>
+	<p>
+		© 2015 Lucas Machado. <a href="http://machadolucas.me">machadolucas.me</a>
+	</p>
+	
+
+	<script type="text/javascript">
+
+	String.prototype.shuffle = function () {
+	    var a = this.split(""),
+	        n = a.length;
+	    for(var i = n - 1; i > 0; i--) {
+	        var j = Math.floor(Math.random() * (i + 1));
+	        var tmp = a[i];
+	        a[i] = a[j];
+	        a[j] = tmp;
+	    }
+	    return a.join("");
+	}
+	String.prototype.replaceAt=function(index, character) {
+	    return this.substr(0, index) + character + this.substr(index+character.length);
+	}
+
+	function generateInitialPlayerLine() {
+		var field = "";
+		for (var i = 0; i < fieldWidth; i++) {
+			if(i == playerPosition) {
+				field += playerChar;
+			} else {
+				field += emptyChar;
+			}
+		};
+		return "<p>" + wall + field + wall + "</p>";
+	}
+	function generatePlayerLine(line) {
+		line = line.replace(regexAllEmpty, "ɤ");
+		if (line.charAt(playerPosition+wallWidth) === obstacleChar) {
+			abortTimer();
+			toContinue = confirm("You lost. Score " + score + ". Do you want to continue?");
+			score = 0;
+			if (toContinue) {
+				startTimer();
+			} else {
+				start();
+			}
+		}
+		line = line.replaceAt( playerPosition + wallWidth, playerChar);
+		return line.replace(/ɤ/g, emptyChar);
+	}
+
+	function drawInitialStage() {
+		$('#stage').children().remove();
+		drawLine(generateInitialPlayerLine());
+		for (var i = stageHeight - 2; i >= 0; i--) {
+			drawLine(generateEmptyLine());
+		};
+	}
+
+	function generateNewLine() {
+		var amountOfObstacles = Math.floor(Math.random() * fieldWidth * obstacleLevel);
+
+		var field = "";
+		for (var i = 0; i < fieldWidth; i++) {
+			if(amountOfObstacles > 0) {
+				field += obstacleChar;
+				amountOfObstacles--;
+			} else {
+				field += "ɤ";
+			}
+		};
+		field = field.shuffle(); 
+		field = field.replace(/ɤ/g, emptyChar);
+		return "<p>" + wall + field + wall + "</p>";
+	}
+
+	function generateEmptyLine() {
+
+		var field = "";
+		for (var i = 0; i < fieldWidth; i++) {
+			field += emptyChar;
+		};
+		return "<p>" + wall + field + wall + "</p>";
+	}
+
+	function updatePlayerPosition() {
+		lastLine = $('#stage > p').last();
+		lastLine.html(generatePlayerLine(lastLine.html()));
+	}
+	function drawLine(line) {
+		$('#stage').prepend(line);
+	}
+	function removeLastLine() {
+		stage.removeChild(stage.lastChild); 
+	}
+	
+
+
+	var isDrawLine = 0;
+	function loopFunction() {
+		if(isDrawLine < obstacleGap) {
+			drawLine(generateEmptyLine());
+			isDrawLine++;
+		} else {
+			drawLine(generateNewLine());
+			isDrawLine = 0;
+		}
+		removeLastLine();
+		updatePlayerPosition();
+		score++;
+		scoreElement.text(score);
+	}
+	//Start animation
+	function startTimer() {
+		paused = false;
+		window.tid = setInterval(loopFunction, speed);
+	}
+	//Stop animation
+	function abortTimer() {
+		paused = true;
+		clearInterval(tid);
+	}
+	//Change animation speed
+	function changeSpeed(value) {
+		speed = value;
+		abortTimer();
+		startTimer();
+	}
+
+	function start() {
+		score = 0;
+		drawInitialStage();
+	}
+	var scoreElement = $("#score");
+	var paused = true;
+	var score = 0;
+	var wall = "";
+	var stage = document.getElementById("stage");
+	var fieldWidth = (stageWidth - wallWidth * 2);
+	var playerPosition = fieldWidth / 2;
+
+	var regexAllEmpty = new RegExp(emptyChar,"g");
+
+	$(function() {
+		$('#content').css('width', stageWidth * 0.7 + 'em');
+		
+		for (var i = 0; i < wallWidth; i++) {
+			wall += wallChar;
+		};
+		start();
+
+		var listener = new window.keypress.Listener();
+		
+
+		listener.simple_combo("left", function() {
+		    if (playerPosition > 0) {
+		    	playerPosition--;
+		    }
+		    updatePlayerPosition();
+		});
+		listener.simple_combo("right", function() {
+		    if (playerPosition < fieldWidth - 1) {
+		    	playerPosition++;
+		    }
+		    updatePlayerPosition();
+		});
+		listener.simple_combo("p", function() {
+			if (paused) {
+				startTimer();
+			} else {
+				abortTimer();
+			}
+		});
+		listener.simple_combo("r", function() {
+			reset = confirm("Do you really want to restart?");
+			abortTimer();
+			if (reset) {
+				start();
+				if (paused) {
+					startTimer();
+				}
+				return;
+			};
+			startTimer();
+		});
+	});
+
+	</script>
+	
+</body>
+</html>
