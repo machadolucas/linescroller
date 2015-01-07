@@ -77,6 +77,7 @@
 	
 
 	<div id="content">
+		<h2>Level&nbsp;<span id="level">1</span></h2>
 		<h2>Score&nbsp;<span id="score">0</span></h2>
 		<div id="stage"></div>
 		<p>
@@ -122,6 +123,8 @@
 			abortTimer();
 			toContinue = confirm("You lost. Score " + score + ". Do you want to continue?");
 			score = 0;
+			level = 1;
+			speed = originalSpeed;
 			if (toContinue) {
 				startTimer();
 			} else {
@@ -192,6 +195,14 @@
 		updatePlayerPosition();
 		score++;
 		scoreElement.text(score);
+		if (score % 200 == 0) {
+			level++;
+			levelElement.text(level);
+			if (speed > 10) {
+				changeSpeed(speed - speed * 0.25);	
+			};
+			
+		};
 	}
 	//Start animation
 	function startTimer() {
@@ -212,11 +223,17 @@
 
 	function start() {
 		score = 0;
+		level = 1;
+		speed = originalSpeed;
 		drawInitialStage();
 	}
-	var scoreElement = $("#score");
+
 	var paused = true;
+	var scoreElement = $("#score");
+	var levelElement = $("#level");
 	var score = 0;
+	var level = 1;
+	var originalSpeed = speed;
 	var wall = "";
 	var stage = document.getElementById("stage");
 	var fieldWidth = (stageWidth - wallWidth * 2);
