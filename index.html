@@ -132,6 +132,8 @@
 		return "<p>" + wall + field + wall + "</p>";
 	}
 
+
+	//Generates a new line without obstacles
 	function generateEmptyLine() {
 
 		var field = "";
@@ -141,13 +143,21 @@
 		return "<p>" + wall + field + wall + "</p>";
 	}
 
+
+	//Gets the last line and merges with player position
 	function updatePlayerPosition() {
 		lastLine = $('#stage > p').last();
 		lastLine.html(generatePlayerLine(lastLine.html()));
 	}
+
+
+	//Prepends a line/string
 	function drawLine(line) {
 		$('#stage').prepend(line);
 	}
+
+
+	//Removes the last line
 	function removeLastLine() {
 		stage.removeChild(stage.lastChild); 
 	}
