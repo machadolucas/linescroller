@@ -236,13 +236,13 @@
 		var listener = new window.keypress.Listener();
 
 		listener.simple_combo("left", function() {
-		    if (playerPosition > 0) {
+		    if (!paused && playerPosition > 0) {
 		    	playerPosition--;
 		    }
 		    updatePlayerPosition();
 		});
 		listener.simple_combo("right", function() {
-		    if (playerPosition < fieldWidth - 1) {
+		    if (!paused && playerPosition < fieldWidth - 1) {
 		    	playerPosition++;
 		    }
 		    updatePlayerPosition();
