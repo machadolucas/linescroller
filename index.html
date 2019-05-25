@@ -1,7 +1,7 @@
 <!--
 	Developed on 07-Jan-2015 by
 	© 2015 Lucas Machado
-	http://machadolucas.me
+	https://machadolucas.me
 -->
 <!DOCTYPE html>
 <html>
@@ -47,14 +47,19 @@
 		<p>
 			Press P to Play/Pause. R to Restart. Use the arrows to move left or right.
 		</p>
+		<p id="final-score">
+		</p>
 	</div>
-	<p>
+	<p class="cp">
 		© 2015 Lucas Machado. <a href="http://machadolucas.me">machadolucas.me</a>
+	</p>
+
+	<p class="bg-credits">
+		Photo by Ben Neale on Unsplash
 	</p>
 	
 
 	<script type="text/javascript">
-
 
 	//Additional functions to shuffle and replace chars in Strings
 	String.prototype.shuffle = function () {
@@ -91,9 +96,9 @@
 	//Merges with the descending line and checks if there is a conflict with obstacle
 	function generatePlayerLine(line) {
 		line = line.replace(regexAllEmpty, "ɤ");
-		if (line.charAt(playerPosition+wallWidth) === obstacleChar) {
+		if (line.charAt(playerPosition + wallWidth) === obstacleChar) {
 			abortTimer();
-			alert("Score " + score + ". Level " + level);
+			finalScoreElement.text("Score " + score + ". Level " + level);
 			score = 0;
 			level = 1;
 			speed = originalSpeed;
@@ -221,13 +226,14 @@
 	}
 
 	var paused = true;
-	var scoreElement = $("#score");
-	var levelElement = $("#level");
+	const scoreElement = $("#score");
+	const finalScoreElement = $("#final-score");
+	const levelElement = $("#level");
 	var score = 0;
 	var level = 1;
 	var originalSpeed = speed;
 	var wall = "";
-	var stage = document.getElementById("stage");
+	const stage = document.getElementById("stage");
 	var fieldWidth = (stageWidth - wallWidth * 2);
 	var playerPosition = fieldWidth / 2;
 
