@@ -27,6 +27,8 @@ a {
 	font-size: 1.2em;
 	border: 0.1em solid #000;
 	border-radius: 1em;
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
 }
 #content h1{
 	float: left;
